@@ -1,3 +1,4 @@
+
 """
 Auteur     :  Nucleus
 Version    :  1.0
@@ -5,20 +6,27 @@ Date        :  02-03-2021
 Description :  
 """
 
+#importation des modules
 import urllib.request
 import json
 import time
 import socket
 from datetime import datetime
+
+#boucle infini qui surveille la connexion du user
 def main(IPaddress="127.0.0.1"):
+    
     conn = False
     last_ip=IPaddress
+    
     while True:
         try:
-            urllib.request.urlopen('http://google.com') #Python 3.x
+            urllib.request.urlopen('http://google.com') 
             conn=True
-            ip = socket.gethostbyname(socket.gethostname())
-            if(ip!= last_ip):
+            ip = socket.gethostbyname(socket.gethostname()) #get ip de la connexion actuelle
+            #verifie si l'ancienne ip est != de la nouvelle
+            #si oui, get ip, get date et call get_data
+            if(ip!= last_ip): 
                 last_ip=ip
                 date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                 print("|------Nouvelle connexion------|")
@@ -27,23 +35,20 @@ def main(IPaddress="127.0.0.1"):
             else : print("connecté au meme reseau ip : "+ip)
         except:
             conn=False
-            link = "http://ip-api.com/json"
-            response = urllib.request.urlopen(link)
-            print(json.loads(response.read()))
             print("aucune connexion")
         time.sleep(1)
-        
 
+#recuperer les info sur la victime
 def get_data(ip,date):
     
     link = "http://ip-api.com/json"
     response = urllib.request.urlopen(link)
     data = json.loads(response.read())
-    print(date)
+    
     data['ip']=ip
     data['date']=date
     
-    if(len(data)>1):
+    if(len(data)>2):
         print("Date : "+data["date"])
         print("Status : "+data["status"])
         print("Query : "+data["query"])
@@ -59,7 +64,9 @@ def get_data(ip,date):
         write_in_file(data)
     else : print("aucune info")
 
+#stocker les info dans un fichier
 def write_in_file(data):
+    
     with open("data.info",'a') as f :
         f.write("|------Nouvelle connexion------|\n")
         f.write("Date : "+data["date"]+"\n")
@@ -75,5 +82,6 @@ def write_in_file(data):
         f.write("Organisation : "+data["org"]+"\n")
         f.write("\n")
     print("info sauvegardé avec succes")
+    
 if __name__=="__main__":
 	main()
